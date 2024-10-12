@@ -27,7 +27,6 @@ namespace RestoreMonarchy.RespawnProtection
             DamageTool.damagePlayerRequested += DamagedPlayerRequested;
             PlayerLife.OnSelectingRespawnPoint += OnSelectRespawnPoint;
 
-
             Logger.Log($"{Name} {Assembly.GetName().Version.ToString(3)} has been loaded!", ConsoleColor.Yellow);
             Logger.Log("Check out more Unturned plugins at restoremonarchy.com");
         }
@@ -51,12 +50,26 @@ namespace RestoreMonarchy.RespawnProtection
             { "SpawnProtectionDisabledOnEquipMelee", "Spawn protection disabled because you equipped a melee weapon." },
             { "SpawnProtectionDisabledOnEquipThrowable", "Spawn protection disabled because you equipped a throwable." },
             { "SpawnProtectionDisabledOnAttack", "Spawn protection disabled because you attacked." },
-            { "PlayerHasProtection", "You can't hurt {0} because they have spawn protection." }
+            { "SpawnProtectionDisabledWithCommand", "Spawn protection disabled by command." },
+            { "PlayerHasProtection", "You can't hurt {0} because they have spawn protection." },
+            { "SpawnProtectionCommandFormat", "You must specify player name." },
+            { "PlayerNotFound", "Player not found." },
+            { "SpawnProtectionCommandDisabled", "Spawn protection disabled for {0}." },
+            { "SpawnProtectionCommandEnabled", "Spawn protection enabled for {0} for {1} seconds." }
         };
 
         private void OnPlayerConnected(UnturnedPlayer player)
         {
-            player.Player.gameObject.AddComponent<RespawnProtectionComponent>();
+            RespawnProtectionComponent component = player.Player.gameObject.AddComponent<RespawnProtectionComponent>();
+            if (Configuration.Instance.EnableJoinSpawnProtection)
+            {
+                component.EnableProtection();
+                if (Configuration.Instance.SendProtectionEnabledMessage)
+                {
+                    string duration = Configuration.Instance.ProtectionDuration.ToString("N0");
+                    UnturnedChat.Say(player, Translate("SpawnProtectionEnabled", duration), MessageColor);
+                }
+            }
         }
 
         private void OnPlayerDisconnected(UnturnedPlayer player)
@@ -108,7 +121,10 @@ namespace RestoreMonarchy.RespawnProtection
                 if (killerComponent != null && killerComponent.IsProtected)
                 {
                     killerComponent.DisableProtection();
-                    UnturnedChat.Say(parameters.killer, Translate("SpawnProtectionDisabledOnAttack"), MessageColor);
+                    if (Configuration.Instance.SendProtectionDisabledOtherMessage)
+                    {
+                        UnturnedChat.Say(parameters.killer, Translate("SpawnProtectionDisabledOnAttack"), MessageColor);
+                    }                    
                 }
             }            
         }

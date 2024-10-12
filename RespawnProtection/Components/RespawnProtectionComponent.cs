@@ -56,6 +56,11 @@ namespace RestoreMonarchy.RespawnProtection.Components
                 }
 
                 EnableProtection();
+                if (configuration.SendProtectionEnabledMessage)
+                {
+                    string duration = configuration.ProtectionDuration.ToString("N0");
+                    UnturnedChat.Say(SteamID, pluginInstance.Translate("SpawnProtectionEnabled", duration), pluginInstance.MessageColor);
+                }
             }
         }
 
@@ -64,9 +69,7 @@ namespace RestoreMonarchy.RespawnProtection.Components
             if (IsProtected)
             {
                 return;
-            }
-
-            UnturnedChat.Say(SteamID, pluginInstance.Translate("SpawnProtectionEnabled", configuration.ProtectionDuration), pluginInstance.MessageColor);
+            }                         
 
             IsProtected = true;
             respawnPosition = Player.transform.position;
@@ -101,7 +104,10 @@ namespace RestoreMonarchy.RespawnProtection.Components
             yield return new WaitForSeconds(configuration.ProtectionDuration);
 
             DisableProtection();
-            UnturnedChat.Say(SteamID, pluginInstance.Translate("SpawnProtectionDisabledExpired"), pluginInstance.MessageColor);
+            if (configuration.SendProtectionDisabledExpiredMessage)
+            {
+                UnturnedChat.Say(SteamID, pluginInstance.Translate("SpawnProtectionDisabledExpired"), pluginInstance.MessageColor);
+            }            
         }
 
         private IEnumerator EffectTimer()
@@ -126,7 +132,13 @@ namespace RestoreMonarchy.RespawnProtection.Components
                 if (Vector3.Distance(respawnPosition, Player.transform.position) > configuration.MaxMoveDistance)
                 {
                     DisableProtection();
-                    UnturnedChat.Say(SteamID, pluginInstance.Translate("SpawnProtectionDisabledOnMove"), pluginInstance.MessageColor);
+                    if (configuration.SendProtectionDisabledOtherMessage)
+                    {
+                        if (configuration.SendProtectionDisabledOtherMessage)
+                        {
+                            UnturnedChat.Say(SteamID, pluginInstance.Translate("SpawnProtectionDisabledOnMove"), pluginInstance.MessageColor);
+                        }                        
+                    }                        
                 }
             }
         }
@@ -138,19 +150,28 @@ namespace RestoreMonarchy.RespawnProtection.Components
                 if (configuration.DisableOnEquipGun && asset.type == EItemType.GUN)
                 {
                     DisableProtection();
-                    UnturnedChat.Say(SteamID, pluginInstance.Translate("SpawnProtectionDisabledOnEquipGun"), pluginInstance.MessageColor);
+                    if (configuration.SendProtectionDisabledOtherMessage)
+                    {
+                        UnturnedChat.Say(SteamID, pluginInstance.Translate("SpawnProtectionDisabledOnEquipGun"), pluginInstance.MessageColor);
+                    }                    
                 }
 
                 if (configuration.DisableOnEquipMelee && asset.type == EItemType.MELEE)
                 {
                     DisableProtection();
-                    UnturnedChat.Say(SteamID, pluginInstance.Translate("SpawnProtectionDisabledOnEquipMelee"), pluginInstance.MessageColor);
+                    if (configuration.SendProtectionDisabledOtherMessage)
+                    {
+                        UnturnedChat.Say(SteamID, pluginInstance.Translate("SpawnProtectionDisabledOnEquipMelee"), pluginInstance.MessageColor);
+                    }                    
                 }
 
                 if (configuration.DisableOnEquipThrowable && asset.type == EItemType.THROWABLE)
                 {
                     DisableProtection();
-                    UnturnedChat.Say(SteamID, pluginInstance.Translate("SpawnProtectionDisabledOnEquipThrowable"), pluginInstance.MessageColor);
+                    if (configuration.SendProtectionDisabledOtherMessage)
+                    {
+                        UnturnedChat.Say(SteamID, pluginInstance.Translate("SpawnProtectionDisabledOnEquipThrowable"), pluginInstance.MessageColor);
+                    }                        
                 }
             }
         }
