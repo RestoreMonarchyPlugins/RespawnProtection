@@ -2,9 +2,11 @@
 using Rocket.Unturned.Chat;
 using SDG.Unturned;
 using Steamworks;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Logger = Rocket.Core.Logging.Logger;
 
 namespace RestoreMonarchy.RespawnProtection.Components
 {
@@ -112,7 +114,18 @@ namespace RestoreMonarchy.RespawnProtection.Components
 
         private IEnumerator EffectTimer()
         {
+            if (configuration.EffectId == 0)
+            {
+                yield break;
+            }
+
             EffectAsset effectAsset = (EffectAsset)Assets.find(EAssetType.EFFECT, configuration.EffectId);
+            if (effectAsset == null)
+            {
+                Logger.Log($"Effect with ID {configuration.EffectId} not found.", ConsoleColor.Yellow);
+                yield break;
+            }
+
             while (IsProtected)
             {
                 TriggerEffectParameters parameters = new(effectAsset)

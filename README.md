@@ -20,6 +20,7 @@ Gives players protection from other players damaging them after respawning.
   <MessageColor>yellow</MessageColor>
   <ProtectionDuration>10</ProtectionDuration>
   <EnableHomeSpawnProtection>false</EnableHomeSpawnProtection>
+  <EnableJoinSpawnProtection>false</EnableJoinSpawnProtection>
   <MaxMoveDistance>10</MaxMoveDistance>
   <ProtectFromPVE>true</ProtectFromPVE>
   <DisableOnEquipGun>true</DisableOnEquipGun>
@@ -30,6 +31,9 @@ Gives players protection from other players damaging them after respawning.
   <EffectId>132</EffectId>
   <EffectTriggerRate>0.1</EffectTriggerRate>
   <AttackMessageRate>2</AttackMessageRate>
+  <SendProtectionEnabledMessage>true</SendProtectionEnabledMessage>
+  <SendProtectionDisabledExpiredMessage>true</SendProtectionDisabledExpiredMessage>
+  <SendProtectionDisabledOtherMessage>true</SendProtectionDisabledOtherMessage>
 </RespawnProtectionConfiguration>
 ```
 
@@ -44,6 +48,11 @@ Gives players protection from other players damaging them after respawning.
   <Translation Id="SpawnProtectionDisabledOnEquipMelee" Value="Spawn protection disabled because you equipped a melee weapon." />
   <Translation Id="SpawnProtectionDisabledOnEquipThrowable" Value="Spawn protection disabled because you equipped a throwable." />
   <Translation Id="SpawnProtectionDisabledOnAttack" Value="Spawn protection disabled because you attacked." />
+  <Translation Id="SpawnProtectionDisabledWithCommand" Value="Spawn protection disabled by command." />
   <Translation Id="PlayerHasProtection" Value="You can't hurt {0} because they have spawn protection." />
+  <Translation Id="SpawnProtectionCommandFormat" Value="You must specify player name." />
+  <Translation Id="PlayerNotFound" Value="Player not found." />
+  <Translation Id="SpawnProtectionCommandDisabled" Value="Spawn protection disabled for {0}." />
+  <Translation Id="SpawnProtectionCommandEnabled" Value="Spawn protection enabled for {0} for {1} seconds." />
 </Translations>
 ```
