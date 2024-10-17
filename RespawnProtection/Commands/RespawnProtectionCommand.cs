@@ -1,6 +1,5 @@
 ﻿using RestoreMonarchy.RespawnProtection.Components;
 using Rocket.API;
-using Rocket.Unturned.Chat;
 using Rocket.Unturned.Player;
 using System.Collections.Generic;
 
@@ -14,14 +13,14 @@ namespace RestoreMonarchy.RespawnProtection.Commands
         {
             if (command.Length < 1)
             {
-                UnturnedChat.Say(caller, pluginInstance.Translate("SpawnProtectionCommandFormat"), pluginInstance.MessageColor);
+                pluginInstance.SendMessageToPlayer(caller, "SpawnProtectionCommandFormat");
                 return;
             }
 
             UnturnedPlayer target = UnturnedPlayer.FromName(command[0]);
             if (target == null)
             {
-                UnturnedChat.Say(caller, pluginInstance.Translate("PlayerNotFound"), pluginInstance.MessageColor);
+                pluginInstance.SendMessageToPlayer(caller, "PlayerNotFound");
                 return;
             }
 
@@ -36,10 +35,9 @@ namespace RestoreMonarchy.RespawnProtection.Commands
                 component.DisableProtection();
                 if (pluginInstance.Configuration.Instance.SendProtectionDisabledExpiredMessage)
                 {
-                    UnturnedChat.Say(target, pluginInstance.Translate("SpawnProtectionDisabledWithCommand"), pluginInstance.MessageColor);
+                    pluginInstance.SendMessageToPlayer(target, "SpawnProtectionDisabledWithCommand");
                 }
-
-                UnturnedChat.Say(caller, pluginInstance.Translate("SpawnProtectionCommandDisabled", target.DisplayName), pluginInstance.MessageColor);
+                pluginInstance.SendMessageToPlayer(caller, "SpawnProtectionCommandDisabled", target.DisplayName);
             }
             else
             {
@@ -47,23 +45,17 @@ namespace RestoreMonarchy.RespawnProtection.Commands
                 string duration = pluginInstance.Configuration.Instance.ProtectionDuration.ToString("N0");
                 if (pluginInstance.Configuration.Instance.SendProtectionEnabledMessage)
                 {
-                    UnturnedChat.Say(target, pluginInstance.Translate("SpawnProtectionEnabled", duration), pluginInstance.MessageColor);
+                    pluginInstance.SendMessageToPlayer(target, "SpawnProtectionEnabled", duration);
                 }
-
-                UnturnedChat.Say(caller, pluginInstance.Translate("SpawnProtectionCommandEnabled", target.DisplayName, duration), pluginInstance.MessageColor);
+                pluginInstance.SendMessageToPlayer(caller, "SpawnProtectionCommandEnabled", target.DisplayName, duration);
             }
         }
 
         public AllowedCaller AllowedCaller => AllowedCaller.Both;
-
         public string Name => "respawnprotection";
-
         public string Help => "";
-
         public string Syntax => "[player] [duration]";
-
         public List<string> Aliases => new();
-
         public List<string> Permissions => new();
     }
 }

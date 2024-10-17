@@ -1,5 +1,6 @@
 ﻿using RestoreMonarchy.RespawnProtection.Components;
 using RestoreMonarchy.RespawnProtection.Models;
+using Rocket.API;
 using Rocket.API.Collections;
 using Rocket.Core.Logging;
 using Rocket.Core.Plugins;
@@ -43,7 +44,7 @@ namespace RestoreMonarchy.RespawnProtection
 
         public override TranslationList DefaultTranslations => new()
         {
-            { "SpawnProtectionEnabled", "Spawn protection enabled for {0} seconds." },
+            { "SpawnProtectionEnabled", "Spawn protection enabled for [[b]]{0}[[/b]] seconds." },
             { "SpawnProtectionDisabledExpired", "Your spawn protection has expired." },
             { "SpawnProtectionDisabledOnMove", "Spawn protection disabled because you moved too far." },
             { "SpawnProtectionDisabledOnEquipGun", "Spawn protection disabled because you equipped a gun." },
@@ -51,11 +52,11 @@ namespace RestoreMonarchy.RespawnProtection
             { "SpawnProtectionDisabledOnEquipThrowable", "Spawn protection disabled because you equipped a throwable." },
             { "SpawnProtectionDisabledOnAttack", "Spawn protection disabled because you attacked." },
             { "SpawnProtectionDisabledWithCommand", "Spawn protection disabled by command." },
-            { "PlayerHasProtection", "You can't hurt {0} because they have spawn protection." },
+            { "PlayerHasProtection", "You can't hurt [[b]]{0}[[/b]] because they have spawn protection." },
             { "SpawnProtectionCommandFormat", "You must specify player name." },
             { "PlayerNotFound", "Player not found." },
-            { "SpawnProtectionCommandDisabled", "Spawn protection disabled for {0}." },
-            { "SpawnProtectionCommandEnabled", "Spawn protection enabled for {0} for {1} seconds." }
+            { "SpawnProtectionCommandDisabled", "Spawn protection disabled for [[b]]{0}[[/b]]." },
+            { "SpawnProtectionCommandEnabled", "Spawn protection enabled for [[b]]{0}[[/b]] for [[b]]{1}[[/b]] seconds." }
         };
 
         private void OnPlayerConnected(UnturnedPlayer player)
@@ -67,7 +68,7 @@ namespace RestoreMonarchy.RespawnProtection
                 if (Configuration.Instance.SendProtectionEnabledMessage)
                 {
                     string duration = Configuration.Instance.ProtectionDuration.ToString("N0");
-                    UnturnedChat.Say(player, Translate("SpawnProtectionEnabled", duration), MessageColor);
+                    SendMessageToPlayer(player, "SpawnProtectionEnabled", duration);
                 }
             }
         }
@@ -99,7 +100,8 @@ namespace RestoreMonarchy.RespawnProtection
                     {
                         shouldAllow = false;
                     }
-                } else
+                }
+                else
                 {
                     if (!component.LastAttackMessages.Any(x => x.Player == killer && (DateTime.Now - x.DateTime) <= TimeSpan.FromSeconds(Configuration.Instance.AttackMessageRate)))
                     {
@@ -109,7 +111,7 @@ namespace RestoreMonarchy.RespawnProtection
                             DateTime = DateTime.Now
                         });
 
-                        UnturnedChat.Say(parameters.killer, Translate("PlayerHasProtection", parameters.player.channel.owner.playerID.characterName), MessageColor);
+                        SendMessageToPlayer(UnturnedPlayer.FromPlayer(killer), "PlayerHasProtection", parameters.player.channel.owner.playerID.characterName);
                     }
                     shouldAllow = false;
                 }
@@ -123,10 +125,10 @@ namespace RestoreMonarchy.RespawnProtection
                     killerComponent.DisableProtection();
                     if (Configuration.Instance.SendProtectionDisabledOtherMessage)
                     {
-                        UnturnedChat.Say(parameters.killer, Translate("SpawnProtectionDisabledOnAttack"), MessageColor);
-                    }                    
+                        SendMessageToPlayer(UnturnedPlayer.FromPlayer(killer), "SpawnProtectionDisabledOnAttack");
+                    }
                 }
-            }            
+            }
         }
 
         private void OnSelectRespawnPoint(PlayerLife sender, bool wantsToSpawnAtHome, ref UnityEngine.Vector3 position, ref float yaw)
@@ -136,6 +138,20 @@ namespace RestoreMonarchy.RespawnProtection
             {
                 component.IsHomeSpawn = wantsToSpawnAtHome;
             }
+        }
+
+        internal void SendMessageToPlayer(IRocketPlayer player, string translationKey, params object[] placeholder)
+        {
+            string msg = Translate(translationKey, placeholder);
+            msg = msg.Replace("[[", "<").Replace("]]", ">");
+            if (player is ConsolePlayer)
+            {
+                Logger.Log(msg);
+                return;
+            }
+
+            UnturnedPlayer unturnedPlayer = (UnturnedPlayer)player;
+            ChatManager.serverSendMessage(msg, MessageColor, null, unturnedPlayer.SteamPlayer(), EChatMode.SAY, Configuration.Instance.MessageIconUrl, true);
         }
     }
 }

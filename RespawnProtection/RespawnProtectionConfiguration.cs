@@ -5,6 +5,7 @@ namespace RestoreMonarchy.RespawnProtection
     public class RespawnProtectionConfiguration : IRocketPluginConfiguration
     {
         public string MessageColor { get; set; } = "yellow";
+        public string MessageIconUrl { get; set; } = "https://i.imgur.com/Di3NWF0.png";
         public float ProtectionDuration { get; set; }
         public bool EnableHomeSpawnProtection { get; set; }
         public bool EnableJoinSpawnProtection { get; set; }
@@ -25,6 +26,7 @@ namespace RestoreMonarchy.RespawnProtection
         public void LoadDefaults()
         {
             MessageColor = "yellow";
+            MessageIconUrl = "https://i.imgur.com/Di3NWF0.png";
             ProtectionDuration = 10;
             EnableHomeSpawnProtection = false;
             EnableJoinSpawnProtection = false;
