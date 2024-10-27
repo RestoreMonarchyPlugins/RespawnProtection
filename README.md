@@ -14,6 +14,9 @@ Gives players protection from other players damaging them after respawning.
 - Configurable effect to show when protection is active
 - Rich text and icon support for messages
 
+## Commands
+- `/respawnprotection [player] [duration]` - Enable or disable protection for a player for a specified duration. Admin command.
+
 ## Configuration
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
