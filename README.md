@@ -37,6 +37,7 @@ Gives players protection from other players damaging them after respawning.
   <EffectTriggerRate>0.1</EffectTriggerRate>
   <AttackMessageRate>2</AttackMessageRate>
   <SendProtectionEnabledMessage>true</SendProtectionEnabledMessage>
+  <ProtectionEnabledMessageDelay>0</ProtectionEnabledMessageDelay>
   <SendProtectionDisabledExpiredMessage>true</SendProtectionDisabledExpiredMessage>
   <SendProtectionDisabledOtherMessage>true</SendProtectionDisabledOtherMessage>
 </RespawnProtectionConfiguration>
