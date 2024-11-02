@@ -20,6 +20,8 @@ namespace RestoreMonarchy.RespawnProtection
         public float EffectTriggerRate { get; set; }
         public float AttackMessageRate { get; set; }
         public bool SendProtectionEnabledMessage { get; set; } = true;
+        public float ProtectionEnabledMessageDelay { get; set; } = 0f;
+        public bool ShouldSerializeSpawnProtectionEnabledMessageDelay() => ProtectionEnabledMessageDelay > 0;
         public bool SendProtectionDisabledExpiredMessage { get; set; } = true;
         public bool SendProtectionDisabledOtherMessage { get; set; } = true;
 

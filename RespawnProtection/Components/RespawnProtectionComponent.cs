@@ -108,7 +108,8 @@ namespace RestoreMonarchy.RespawnProtection.Components
             DisableProtection();
             if (configuration.SendProtectionDisabledExpiredMessage)
             {
-                pluginInstance.SendMessageToPlayer(UnturnedPlayer.FromCSteamID(SteamID), "SpawnProtectionDisabledExpired");
+                UnturnedPlayer unturnedPlayer = UnturnedPlayer.FromCSteamID(SteamID);
+                pluginInstance.SendMessageToPlayer(unturnedPlayer, "SpawnProtectionDisabledExpired");
             }
         }
 

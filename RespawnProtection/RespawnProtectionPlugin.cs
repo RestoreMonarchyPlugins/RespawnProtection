@@ -4,6 +4,7 @@ using Rocket.API;
 using Rocket.API.Collections;
 using Rocket.Core.Logging;
 using Rocket.Core.Plugins;
+using Rocket.Core.Utils;
 using Rocket.Unturned;
 using Rocket.Unturned.Chat;
 using Rocket.Unturned.Player;
@@ -68,7 +69,17 @@ namespace RestoreMonarchy.RespawnProtection
                 if (Configuration.Instance.SendProtectionEnabledMessage)
                 {
                     string duration = Configuration.Instance.ProtectionDuration.ToString("N0");
-                    SendMessageToPlayer(player, "SpawnProtectionEnabled", duration);
+                    if (Configuration.Instance.ProtectionEnabledMessageDelay > 0)
+                    {
+                        TaskDispatcher.QueueOnMainThread(() =>
+                        {
+                            SendMessageToPlayer(player, "SpawnProtectionEnabled", duration);
+                        }, Configuration.Instance.ProtectionEnabledMessageDelay);
+                        
+                    } else
+                    {
+                        SendMessageToPlayer(player, "SpawnProtectionEnabled", duration);
+                    }                    
                 }
             }
         }
@@ -151,7 +162,10 @@ namespace RestoreMonarchy.RespawnProtection
             }
 
             UnturnedPlayer unturnedPlayer = (UnturnedPlayer)player;
-            ChatManager.serverSendMessage(msg, MessageColor, null, unturnedPlayer.SteamPlayer(), EChatMode.SAY, Configuration.Instance.MessageIconUrl, true);
+            if (unturnedPlayer != null)
+            {
+                ChatManager.serverSendMessage(msg, MessageColor, null, unturnedPlayer.SteamPlayer(), EChatMode.SAY, Configuration.Instance.MessageIconUrl, true);
+            }
         }
     }
 }
