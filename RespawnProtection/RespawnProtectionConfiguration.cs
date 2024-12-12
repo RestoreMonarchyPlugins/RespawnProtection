@@ -9,6 +9,7 @@ namespace RestoreMonarchy.RespawnProtection
         public float ProtectionDuration { get; set; }
         public bool EnableHomeSpawnProtection { get; set; }
         public bool EnableJoinSpawnProtection { get; set; }
+        public bool EnableArenaSpawnProtection { get; set; } = true;
         public float MaxMoveDistance { get; set; }
         public bool ProtectFromPVE { get; set; }
         public bool DisableOnEquipGun { get; set; }
@@ -31,6 +32,7 @@ namespace RestoreMonarchy.RespawnProtection
             ProtectionDuration = 10;
             EnableHomeSpawnProtection = false;
             EnableJoinSpawnProtection = false;
+            EnableArenaSpawnProtection = true;
             MaxMoveDistance = 10f;
             ProtectFromPVE = true;
             DisableOnEquipGun = true;

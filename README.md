@@ -1,5 +1,5 @@
 # Respawn Protection
-Gives players protection from other players damaging them after respawning.
+Protects players from damage after spawning. Supports survival and arena spawns.
 
 ## Features
 - Protects players from damage for a configurable amount of time after spawning
@@ -13,6 +13,7 @@ Gives players protection from other players damaging them after respawning.
 - Protection can be disabled for PVE damage
 - Configurable effect to show when protection is active
 - Rich text and icon support for messages
+- Arena spawn protection support
 
 ## Commands
 - `/respawnprotection [player] [duration]` - Enable or disable protection for a player for a specified duration. Admin command.
@@ -26,6 +27,7 @@ Gives players protection from other players damaging them after respawning.
   <ProtectionDuration>10</ProtectionDuration>
   <EnableHomeSpawnProtection>false</EnableHomeSpawnProtection>
   <EnableJoinSpawnProtection>false</EnableJoinSpawnProtection>
+  <EnableArenaSpawnProtection>true</EnableArenaSpawnProtection>
   <MaxMoveDistance>10</MaxMoveDistance>
   <ProtectFromPVE>true</ProtectFromPVE>
   <DisableOnEquipGun>true</DisableOnEquipGun>

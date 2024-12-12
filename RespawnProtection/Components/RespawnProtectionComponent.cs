@@ -33,12 +33,34 @@ namespace RestoreMonarchy.RespawnProtection.Components
         {
             Player.life.onLifeUpdated += OnLifeUpdated;
             Player.equipment.onEquipRequested += OnEquipRequested;
+            Player.onPlayerTeleported += OnPlayerTeleported;
         }
 
         void OnDestroy()
         {
             Player.life.onLifeUpdated -= OnLifeUpdated;
             Player.equipment.onEquipRequested -= OnEquipRequested;
+            Player.onPlayerTeleported -= OnPlayerTeleported;
+            StopAllCoroutines();
+        }
+
+        private void OnPlayerTeleported(Player player, Vector3 point)
+        {
+            if (!configuration.EnableArenaSpawnProtection)
+            {
+                return;
+            }
+            if (!LevelManager.isArenaMode || LevelManager.arenaState != EArenaState.SPAWN)
+            {
+                return;
+            }
+
+            EnableProtection();
+            if (configuration.SendProtectionEnabledMessage)
+            {
+                string duration = configuration.ProtectionDuration.ToString("N0");
+                pluginInstance.SendMessageToPlayer(UnturnedPlayer.FromPlayer(Player), "SpawnProtectionEnabled", duration);
+            }
         }
 
         public Coroutine ProtectionCoroutine { get; private set; }
@@ -46,6 +68,11 @@ namespace RestoreMonarchy.RespawnProtection.Components
 
         private void OnLifeUpdated(bool isDead)
         {
+            if (LevelManager.isArenaMode)
+            {
+                return;
+            }
+
             if (isDead)
             {
                 DisableProtection();
@@ -61,7 +88,7 @@ namespace RestoreMonarchy.RespawnProtection.Components
                 if (configuration.SendProtectionEnabledMessage)
                 {
                     string duration = configuration.ProtectionDuration.ToString("N0");
-                    pluginInstance.SendMessageToPlayer(UnturnedPlayer.FromCSteamID(SteamID), "SpawnProtectionEnabled", duration);
+                    pluginInstance.SendMessageToPlayer(UnturnedPlayer.FromPlayer(Player), "SpawnProtectionEnabled", duration);
                 }
             }
         }
@@ -105,12 +132,13 @@ namespace RestoreMonarchy.RespawnProtection.Components
         {
             yield return new WaitForSeconds(configuration.ProtectionDuration);
 
-            DisableProtection();
-            if (configuration.SendProtectionDisabledExpiredMessage)
+            if (configuration.SendProtectionDisabledExpiredMessage && Player != null)
             {
-                UnturnedPlayer unturnedPlayer = UnturnedPlayer.FromCSteamID(SteamID);
+                UnturnedPlayer unturnedPlayer = UnturnedPlayer.FromPlayer(Player);
                 pluginInstance.SendMessageToPlayer(unturnedPlayer, "SpawnProtectionDisabledExpired");
             }
+
+            DisableProtection();
         }
 
         private IEnumerator EffectTimer()
@@ -139,16 +167,23 @@ namespace RestoreMonarchy.RespawnProtection.Components
             }
         }
 
+        private float lastCheckTime = 0f;
         void FixedUpdate()
         {
             if (IsProtected && configuration.DisableOnMove)
             {
-                if (Vector3.Distance(respawnPosition, Player.transform.position) > configuration.MaxMoveDistance)
+                // check every 0.25 seconds
+                if (Time.time - lastCheckTime >= 0.25f)
                 {
-                    DisableProtection();
-                    if (configuration.SendProtectionDisabledOtherMessage)
+                    lastCheckTime = Time.time;
+
+                    if (Vector3.Distance(respawnPosition, Player.transform.position) > configuration.MaxMoveDistance)
                     {
-                        pluginInstance.SendMessageToPlayer(UnturnedPlayer.FromCSteamID(SteamID), "SpawnProtectionDisabledOnMove");
+                        DisableProtection();
+                        if (configuration.SendProtectionDisabledOtherMessage)
+                        {
+                            pluginInstance.SendMessageToPlayer(UnturnedPlayer.FromPlayer(Player), "SpawnProtectionDisabledOnMove");
+                        }
                     }
                 }
             }
@@ -163,7 +198,7 @@ namespace RestoreMonarchy.RespawnProtection.Components
                     DisableProtection();
                     if (configuration.SendProtectionDisabledOtherMessage)
                     {
-                        pluginInstance.SendMessageToPlayer(UnturnedPlayer.FromCSteamID(SteamID), "SpawnProtectionDisabledOnEquipGun");
+                        pluginInstance.SendMessageToPlayer(UnturnedPlayer.FromPlayer(Player), "SpawnProtectionDisabledOnEquipGun");
                     }
                 }
 
@@ -172,7 +207,7 @@ namespace RestoreMonarchy.RespawnProtection.Components
                     DisableProtection();
                     if (configuration.SendProtectionDisabledOtherMessage)
                     {
-                        pluginInstance.SendMessageToPlayer(UnturnedPlayer.FromCSteamID(SteamID), "SpawnProtectionDisabledOnEquipMelee");
+                        pluginInstance.SendMessageToPlayer(UnturnedPlayer.FromPlayer(Player), "SpawnProtectionDisabledOnEquipMelee");
                     }
                 }
 
@@ -181,7 +216,7 @@ namespace RestoreMonarchy.RespawnProtection.Components
                     DisableProtection();
                     if (configuration.SendProtectionDisabledOtherMessage)
                     {
-                        pluginInstance.SendMessageToPlayer(UnturnedPlayer.FromCSteamID(SteamID), "SpawnProtectionDisabledOnEquipThrowable");
+                        pluginInstance.SendMessageToPlayer(UnturnedPlayer.FromPlayer(Player), "SpawnProtectionDisabledOnEquipThrowable");
                     }
                 }
             }

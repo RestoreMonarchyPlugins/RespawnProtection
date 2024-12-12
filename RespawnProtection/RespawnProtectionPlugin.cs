@@ -22,7 +22,7 @@ namespace RestoreMonarchy.RespawnProtection
         protected override void Load()
         {
             Instance = this;
-            MessageColor = UnturnedChat.GetColorFromName(Configuration.Instance.MessageColor, UnityEngine.Color.yellow);
+            MessageColor = UnturnedChat.GetColorFromName(Configuration.Instance.MessageColor, UnityEngine.Color.green);
 
             U.Events.OnPlayerConnected += OnPlayerConnected;
             U.Events.OnPlayerDisconnected += OnPlayerDisconnected;
@@ -153,6 +153,11 @@ namespace RestoreMonarchy.RespawnProtection
 
         internal void SendMessageToPlayer(IRocketPlayer player, string translationKey, params object[] placeholder)
         {
+            if (player == null)
+            {
+                return;
+            }
+
             string msg = Translate(translationKey, placeholder);
             msg = msg.Replace("[[", "<").Replace("]]", ">");
             if (player is ConsolePlayer)
